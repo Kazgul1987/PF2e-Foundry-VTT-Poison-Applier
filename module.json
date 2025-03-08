@@ -4,8 +4,8 @@
   "description": "Ermöglicht das Auftragen von Giften auf Waffen mit visuellen Effekten.",
   "version": "1.0.0",
   "compatibility": {
-    "minimum": "11",
-    "verified": "11"
+    "minimum": "12",
+    "verified": "12"
   },
   "authors": [
     {
