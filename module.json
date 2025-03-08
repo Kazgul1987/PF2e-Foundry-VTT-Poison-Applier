@@ -1,0 +1,29 @@
+{
+  "id": "poison-applier",
+  "title": "Giftapplikator",
+  "description": "Ermöglicht das Auftragen von Giften auf Waffen mit visuellen Effekten.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "11"
+  },
+  "authors": [
+    {
+      "name": "Dein Name",
+      "url": "https://github.com/dein-github"
+    }
+  ],
+  "esmodules": ["scripts/main.js"],
+  "styles": ["styles/style.css"],
+  "packs": [],
+  "languages": [
+    {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "lang/de.json"
+    }
+  ],
+  "url": "https://github.com/dein-repo",
+  "manifest": "https://github.com/dein-repo/module.json",
+  "download": "https://github.com/dein-repo/releases/latest/download/module.zip"
+}
