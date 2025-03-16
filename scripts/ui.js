@@ -71,21 +71,15 @@ async function applyPoison(actor, weaponId, poisonId) {
     // 🧪 Debugging: Zeige an, welche Waffe & Gift benutzt wurden
     console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
 
-    // 🎯 Effekt auf das Token setzen
+    // 🎯 Effekt auf das Token setzen (richtige Methode für PF2e)
     let effectData = {
         name: `Vergiftete Waffe (${poison.name})`,
         icon: poison.img,
         origin: actor.uuid,
-        duration: { rounds: 10 }, // 10 Runden lang aktiv
+        duration: { rounds: 10 }, // 10 Runden aktiv
         changes: [
             {
-                key: "flags.pf2e.rollOptions.all.attack-traits",
-                mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-                value: "poison",
-                priority: 20
-            },
-            {
-                key: "flags.pf2e.rollOptions.all.damage-traits",
+                key: "system.traits.value",
                 mode: CONST.ACTIVE_EFFECT_MODES.ADD,
                 value: "poison",
                 priority: 20
@@ -93,8 +87,13 @@ async function applyPoison(actor, weaponId, poisonId) {
         ]
     };
 
-    // Füge den Effekt zum Actor hinzu
-    await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
+    try {
+        // Füge den Effekt zum Actor hinzu
+        await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
+        console.log("🛠️ Effekt erfolgreich hinzugefügt:", effectData);
+    } catch (error) {
+        console.error("❌ Fehler beim Anwenden des Effekts:", error);
+    }
 
     // 🎯 Das Gift aus dem Inventar entfernen oder reduzieren
     let newQuantity = (poison.system.quantity ?? 1) - 1;
