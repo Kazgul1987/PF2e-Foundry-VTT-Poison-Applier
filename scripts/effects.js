@@ -1,5 +1,4 @@
 export async function applyPoisonEffect(actor, weapon, poison) {
-    // 🛠 Debugging: Zeige an, welche Waffe & Gift benutzt wurden
     console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
 
     // 🎯 Effekt für die Waffe setzen (im Angriff)
@@ -15,25 +14,25 @@ export async function applyPoisonEffect(actor, weapon, poison) {
         console.error("❌ Fehler beim Anwenden des Effekts auf die Waffe:", error);
     }
 
-    // 🎯 Effekt am Token hinzufügen (sichtbarer Effekt mit ActiveEffect)
+    // 🎯 Effekt als echtes PF2e-Item hinzufügen (sichtbar in der Effekt-Liste)
     const effectData = {
         name: `Vergiftete Waffe (${poison.name})`,
-        icon: poison.img,
-        origin: actor.uuid,
-        duration: { rounds: 10 }, // Effekt hält 10 Runden
-        changes: [],
-        flags: {
-            core: { statusId: "poisoned-weapon" }, // Status-ID für Token-HUD
-            pf2e: { effectType: "temporary" }, // PF2e-spezifische Flags
-            "token-attacher": { attachTo: "token" } // Effekt bleibt am Token
+        type: "effect",
+        img: poison.img,
+        system: {
+            description: { value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet.</p>` },
+            duration: { value: 10, unit: "rounds" },
+            tokenIcon: { show: true },
+            rules: [],
+            slug: `poisoned-weapon-${actor.id}`
         }
     };
 
     try {
-        await actor.createEmbeddedDocuments("ActiveEffect", [new ActiveEffect(effectData, { parent: actor }).toObject()]);
-        console.log("🛠️ Status-Effekt erfolgreich auf Token angewendet:", effectData);
+        await actor.createEmbeddedDocuments("Item", [effectData]);
+        console.log("🛠️ Effekt erfolgreich auf Token angewendet:", effectData);
     } catch (error) {
-        console.error("❌ Fehler beim Hinzufügen des Status-Effekts am Token:", error);
+        console.error("❌ Fehler beim Hinzufügen des Effekts am Token:", error);
     }
 
     // 🎯 Das Gift aus dem Inventar entfernen oder reduzieren
