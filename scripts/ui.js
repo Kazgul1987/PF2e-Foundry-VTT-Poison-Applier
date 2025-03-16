@@ -68,20 +68,47 @@ async function applyPoison(actor, weaponId, poisonId) {
         return;
     }
 
-    // Optional: Füge einen visuellen Effekt für das Token hinzu
-    await actor.createEmbeddedDocuments("ActiveEffect", [{
-        label: `Vergiftete Waffe (${poison.name})`,
+    // 🧪 Debugging: Zeige an, welche Waffe & Gift benutzt wurden
+    console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
+
+    // 🎯 Effekt auf das Token setzen
+    let effectData = {
+        name: `Vergiftete Waffe (${poison.name})`,
         icon: poison.img,
-        duration: { seconds: 600 }, // 10 Minuten
-        changes: [{ key: "system.bonuses.melee.damage", value: "+1", mode: 2 }]
-    }]);
+        origin: actor.uuid,
+        duration: { rounds: 10 }, // 10 Runden lang aktiv
+        changes: [
+            {
+                key: "flags.pf2e.rollOptions.all.attack-traits",
+                mode: CONST.ACTIVE_EFFECT_MODES.ADD,
+                value: "poison",
+                priority: 20
+            },
+            {
+                key: "flags.pf2e.rollOptions.all.damage-traits",
+                mode: CONST.ACTIVE_EFFECT_MODES.ADD,
+                value: "poison",
+                priority: 20
+            }
+        ]
+    };
 
-    // Optional: Entferne das Gift aus dem Inventar
-    await poison.update({ "system.quantity": poison.system.quantity - 1 });
+    // Füge den Effekt zum Actor hinzu
+    await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
 
-    // Chat-Nachricht anzeigen
+    // 🎯 Das Gift aus dem Inventar entfernen oder reduzieren
+    let newQuantity = (poison.system.quantity ?? 1) - 1;
+    if (newQuantity <= 0) {
+        await poison.delete();
+        console.log(`🗑️ ${poison.name} wurde aus dem Inventar entfernt.`);
+    } else {
+        await poison.update({ "system.quantity": newQuantity });
+        console.log(`🔢 ${poison.name} wurde reduziert auf ${newQuantity}.`);
+    }
+
+    // 💬 Nachricht in den Chat posten
     ChatMessage.create({
-        content: `<b>${actor.name}</b> hat <b>${poison.name}</b> auf <b>${weapon.name}</b> angewendet!`,
+        content: `<b>${actor.name}</b> hat <b>${poison.name}</b> auf <b>${weapon.name}</b> angewendet! Die Waffe ist jetzt vergiftet!`,
         speaker: ChatMessage.getSpeaker({ actor: actor })
     });
 
