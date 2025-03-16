@@ -1,7 +1,23 @@
 export function showPoisonDialog(actor) {
     // Finde Waffen und Gifte im Inventar
-    let weapons = actor.items.filter(item => item.type === "weapon");
-    let poisons = actor.items.filter(item => item.type === "consumable" && item.system.subtype === "poison");
+   export function showPoisonDialog(actor) {
+    // Debugging: Zeige alle Items im Inventar in der Konsole
+    console.log("📦 Inventar von", actor.name, actor.items.map(i => `${i.type}: ${i.name}`));
+
+    // Waffen suchen (PF2e speichert Waffen unterschiedlich)
+    let weapons = actor.items.filter(item =>
+        item.type === "weapon" || item.type === "melee" || item.type === "equipment"
+    );
+
+    // Gifte suchen (Veränderung für neue PF2e Versionen)
+    let poisons = actor.items.filter(item =>
+        item.type === "consumable" &&
+        (item.system?.consumableType?.value === "poison" || item.system?.traits?.value?.includes("poison"))
+    );
+
+    // Debugging: Ausgabe in der Konsole für Foundry (F12 > Konsole)
+    console.log("⚔️ Gefundene Waffen:", weapons);
+    console.log("🧪 Gefundene Gifte:", poisons);
 
     if (weapons.length === 0 || poisons.length === 0) {
         ui.notifications.warn("Dieses Token hat keine Waffen oder keine Gifte.");
