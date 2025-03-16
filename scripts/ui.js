@@ -1,5 +1,3 @@
-export function showPoisonDialog(actor) {
-    // Finde Waffen und Gifte im Inventar
    export function showPoisonDialog(actor) {
     // Debugging: Zeige alle Items im Inventar in der Konsole
     console.log("📦 Inventar von", actor.name, actor.items.map(i => `${i.type}: ${i.name}`));
