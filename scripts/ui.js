@@ -84,18 +84,19 @@ async function applyPoison(actor, weaponId, poisonId) {
         console.error("❌ Fehler beim Anwenden des Effekts auf die Waffe:", error);
     }
 
-    // 🎯 Effekt am Token hinzufügen (damit sichtbar!)
-    let effectData = {
+    // 🎯 Effekt am Token hinzufügen (alternative Methode für PF2e)
+    const effectData = {
         name: `Vergiftete Waffe (${poison.name})`,
-        icon: poison.img, // Das Icon des Gifts als Effekt
+        icon: poison.img,
         origin: actor.uuid,
-        duration: { rounds: 10 }, // Effekt hält 10 Runden
+        duration: { rounds: 10 }, // 10 Runden aktiv
         changes: [],
-        flags: { core: { statusId: "poisoned-weapon" } } // Eigene Effekt-ID
+        flags: { pf2e: { effectType: "temporary" } }, // Richtige Flag für PF2e-Effekte
     };
 
     try {
-        await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
+        const effect = new CONFIG.ActiveEffect.documentClass(effectData, { parent: actor });
+        await actor.createEmbeddedDocuments("ActiveEffect", [effect.toObject()]);
         console.log("🛠️ Effekt erfolgreich auf Token angewendet:", effectData);
     } catch (error) {
         console.error("❌ Fehler beim Hinzufügen des Effekts am Token:", error);
@@ -119,5 +120,3 @@ async function applyPoison(actor, weaponId, poisonId) {
 
     ui.notifications.info(`${poison.name} wurde auf ${weapon.name} angewendet.`);
 }
-
-
