@@ -27,7 +27,8 @@
       }
     ]
   },
-  "esmodules": ["scripts/main.js"],
+  "esmodules": ["scripts/main.js",
+  "scripts/ui.js", "scripts/effects.js"],
   "styles": ["styles/style.css"],
   "packs": [],
   "languages": [
