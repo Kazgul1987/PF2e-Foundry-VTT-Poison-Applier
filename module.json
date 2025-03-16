@@ -3,8 +3,9 @@
   "title": "Giftapplikator",
   "description": "Ermöglicht das Auftragen von Giften auf Waffen mit visuellen Effekten.",
   "version": "1.0.0",
+  "type": "module",
   "compatibility": {
-    "minimum": "12",
+    "minimum": "11",
     "verified": "12"
   },
   "authors": [
@@ -13,18 +14,19 @@
       "url": "https://github.com/Kazgul1987/PF2e-Foundry-VTT-Poison-Applier"
     }
   ],
-   "relationships": {
-        "systems": [
-            {
-                "id": "pf2e",
-                "type": "system",
-                "compatibility": {
-                    "minimum": "5.0.0",
-                    "verified": "6.1.0"
-                }
-            }
-        ]
-   },
+  "systems": ["pf2e"],
+  "relationships": {
+    "systems": [
+      {
+        "id": "pf2e",
+        "type": "system",
+        "compatibility": {
+          "minimum": "5.0.0",
+          "verified": "6.1.0"
+        }
+      }
+    ]
+  },
   "esmodules": ["scripts/main.js"],
   "styles": ["styles/style.css"],
   "packs": [],
@@ -35,7 +37,8 @@
       "path": "lang/de.json"
     }
   ],
-  "url": "https://github.com/dein-repo",
-  "manifest": "https://github.com/Kazgul1987/PF2e-Foundry-VTT-Poison-Applier/blob/main/module.json",
+  "url": "https://github.com/Kazgul1987/PF2e-Foundry-VTT-Poison-Applier",
+  "manifest": "https://raw.githubusercontent.com/Kazgul1987/PF2e-Foundry-VTT-Poison-Applier/main/module.json",
   "download": "https://github.com/Kazgul1987/PF2e-Foundry-VTT-Poison-Applier/releases/latest/download/module.zip"
 }
+
