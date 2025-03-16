@@ -68,31 +68,21 @@ async function applyPoison(actor, weaponId, poisonId) {
         return;
     }
 
-    // 🧪 Debugging: Zeige an, welche Waffe & Gift benutzt wurden
+    // 🛠 Debugging: Zeige an, welche Waffe & Gift benutzt wurden
     console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
 
-    // 🎯 Effekt auf das Token setzen (richtige Methode für PF2e)
-    let effectData = {
-        name: `Vergiftete Waffe (${poison.name})`,
-        icon: poison.img,
-        origin: actor.uuid,
-        duration: { rounds: 10 }, // 10 Runden aktiv
-        changes: [
-            {
-                key: "system.traits.value",
-                mode: CONST.ACTIVE_EFFECT_MODES.ADD,
-                value: "poison",
-                priority: 20
-            }
-        ]
-    };
+    // 🎯 Vorhandene attackEffects abrufen und "poison" hinzufügen
+    let attackEffects = weapon.system.attackEffects?.value || [];
+    if (!attackEffects.includes("poison")) {
+        attackEffects.push("poison");
+    }
 
     try {
-        // Füge den Effekt zum Actor hinzu
-        await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
-        console.log("🛠️ Effekt erfolgreich hinzugefügt:", effectData);
+        // 🛠 Waffe mit "poison" aktualisieren
+        await weapon.update({ "system.attackEffects.value": attackEffects });
+        console.log("🛠️ Waffe aktualisiert mit Gift-Effekt:", attackEffects);
     } catch (error) {
-        console.error("❌ Fehler beim Anwenden des Effekts:", error);
+        console.error("❌ Fehler beim Anwenden des Effekts auf die Waffe:", error);
     }
 
     // 🎯 Das Gift aus dem Inventar entfernen oder reduzieren
@@ -105,7 +95,7 @@ async function applyPoison(actor, weaponId, poisonId) {
         console.log(`🔢 ${poison.name} wurde reduziert auf ${newQuantity}.`);
     }
 
-    // 💬 Nachricht in den Chat posten
+    // 💬 Nachricht im Chat posten
     ChatMessage.create({
         content: `<b>${actor.name}</b> hat <b>${poison.name}</b> auf <b>${weapon.name}</b> angewendet! Die Waffe ist jetzt vergiftet!`,
         speaker: ChatMessage.getSpeaker({ actor: actor })
@@ -113,3 +103,4 @@ async function applyPoison(actor, weaponId, poisonId) {
 
     ui.notifications.info(`${poison.name} wurde auf ${weapon.name} angewendet.`);
 }
+
