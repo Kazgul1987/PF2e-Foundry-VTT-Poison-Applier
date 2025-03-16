@@ -71,18 +71,34 @@ async function applyPoison(actor, weaponId, poisonId) {
     // 🛠 Debugging: Zeige an, welche Waffe & Gift benutzt wurden
     console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
 
-    // 🎯 Vorhandene attackEffects abrufen und "poison" hinzufügen
+    // 🎯 Effekt für die Waffe setzen (im Angriff)
     let attackEffects = weapon.system.attackEffects?.value || [];
     if (!attackEffects.includes("poison")) {
         attackEffects.push("poison");
     }
 
     try {
-        // 🛠 Waffe mit "poison" aktualisieren
         await weapon.update({ "system.attackEffects.value": attackEffects });
         console.log("🛠️ Waffe aktualisiert mit Gift-Effekt:", attackEffects);
     } catch (error) {
         console.error("❌ Fehler beim Anwenden des Effekts auf die Waffe:", error);
+    }
+
+    // 🎯 Effekt am Token hinzufügen (damit sichtbar!)
+    let effectData = {
+        name: `Vergiftete Waffe (${poison.name})`,
+        icon: poison.img, // Das Icon des Gifts als Effekt
+        origin: actor.uuid,
+        duration: { rounds: 10 }, // Effekt hält 10 Runden
+        changes: [],
+        flags: { core: { statusId: "poisoned-weapon" } } // Eigene Effekt-ID
+    };
+
+    try {
+        await actor.createEmbeddedDocuments("ActiveEffect", [effectData]);
+        console.log("🛠️ Effekt erfolgreich auf Token angewendet:", effectData);
+    } catch (error) {
+        console.error("❌ Fehler beim Hinzufügen des Effekts am Token:", error);
     }
 
     // 🎯 Das Gift aus dem Inventar entfernen oder reduzieren
@@ -103,4 +119,5 @@ async function applyPoison(actor, weaponId, poisonId) {
 
     ui.notifications.info(`${poison.name} wurde auf ${weapon.name} angewendet.`);
 }
+
 
