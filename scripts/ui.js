@@ -84,26 +84,26 @@ async function applyPoison(actor, weaponId, poisonId) {
         console.error("❌ Fehler beim Anwenden des Effekts auf die Waffe:", error);
     }
 
-    // 🎯 Effekt am Token hinzufügen (sichtbarer Status-Effekt)
+    // 🎯 Effekt am Token hinzufügen (als sichtbarer Zustand)
     const effectData = {
         name: `Vergiftete Waffe (${poison.name})`,
-        icon: poison.img, // Nutze das Icon des Gifts als Effekt-Icon
+        icon: poison.img,
         origin: actor.uuid,
         duration: { rounds: 10 }, // Effekt hält 10 Runden
         changes: [],
         flags: {
-            core: { statusId: "poisoned-weapon" }, // Status-ID setzen
-            pf2e: { effectType: "temporary" }, // PF2e-spezifische Flag
-            "token-attacher": { attachTo: "token" } // Effekt direkt ans Token anhängen
+            core: { statusId: "poisoned-weapon" }, // Setzt eine ID für Status-Effekte
+            pf2e: { condition: "flat-footed", effectType: "condition" }, // Richtige PF2e-Condition
+            "token-attacher": { attachTo: "token" } // Effekt bleibt am Token
         }
     };
 
     try {
-        const effect = new CONFIG.ActiveEffect.documentClass(effectData, { parent: actor });
+        const effect = new CONFIG.statusEffects.documentClass(effectData, { parent: actor });
         await actor.createEmbeddedDocuments("ActiveEffect", [effect.toObject()]);
-        console.log("🛠️ Sichtbarer Effekt erfolgreich auf Token angewendet:", effectData);
+        console.log("🛠️ Status-Effekt erfolgreich auf Token angewendet:", effectData);
     } catch (error) {
-        console.error("❌ Fehler beim Hinzufügen des Effekts am Token:", error);
+        console.error("❌ Fehler beim Hinzufügen des Status-Effekts am Token:", error);
     }
 
     // 🎯 Das Gift aus dem Inventar entfernen oder reduzieren
