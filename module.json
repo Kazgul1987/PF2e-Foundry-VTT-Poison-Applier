@@ -1,6 +1,6 @@
 {
   "id": "poison-applier",
-  "title": "Giftapplikator",
+  "title": "PF2 Poison-Applier",
   "description": "Ermöglicht das Auftragen von Giften auf Waffen mit visuellen Effekten.",
   "version": "1.0.0",
   "type": "module",
