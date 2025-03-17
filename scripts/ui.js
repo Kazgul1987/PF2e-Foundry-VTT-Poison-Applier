@@ -1,40 +1,62 @@
-   export function showPoisonDialog(actor) {
-    // Debugging: Zeige alle Items im Inventar in der Konsole
-    console.log("📦 Inventar von", actor.name, actor.items.map(i => `${i.type}: ${i.name}`));
+ import { applyPoisonEffect } from "./effects.js";
 
-    // Waffen suchen (PF2e speichert Waffen unterschiedlich)
-    let weapons = actor.items.filter(item =>
-        item.type === "weapon" || item.type === "melee" || item.type === "equipment"
-    );
+// 🛠 Funktion zum Filtern von Waffen im Inventar
+function getWeapons(actor) {
+    return actor.items.filter(item => item.type === "weapon");
+}
 
-    // Gifte suchen (Veränderung für neue PF2e Versionen)
-    let poisons = actor.items.filter(item =>
-        item.type === "consumable" &&
-        (item.system?.consumableType?.value === "poison" || item.system?.traits?.value?.includes("poison"))
-    );
+// 🛠 Funktion zum Filtern von Giften im Inventar
+function getPoisons(actor) {
+    return actor.items.filter(item => item.type === "consumable" && item.system.traits.value.includes("poison"));
+}
 
-    // Debugging: Ausgabe in der Konsole für Foundry (F12 > Konsole)
-    console.log("⚔️ Gefundene Waffen:", weapons);
-    console.log("🧪 Gefundene Gifte:", poisons);
+// 🛠 Hauptfunktion zum Anwenden des Gifts
+async function applyPoison(actor, weaponId, poisonId) {
+    let weapon = actor.items.get(weaponId);
+    let poison = actor.items.get(poisonId);
 
-    if (weapons.length === 0 || poisons.length === 0) {
-        ui.notifications.warn("Dieses Token hat keine Waffen oder keine Gifte.");
+    if (!weapon || !poison) {
+        ui.notifications.error("Fehler beim Anwenden des Gifts.");
         return;
     }
+
+    // Sicherstellen, dass nur echte Waffen vergiftet werden können
+    if (weapon.type !== "weapon") {
+        ui.notifications.error("Du kannst nur Waffen vergiften!");
+        return;
+    }
+
+    // Aufruf der separaten Funktion aus effects.js
+    await applyPoisonEffect(actor, weapon, poison);
+}
+
+// 🛠 Dialog zur Auswahl der Waffe und des Gifts
+async function showPoisonDialog(actor) {
+    let weapons = getWeapons(actor);
+    let poisons = getPoisons(actor);
+
+    if (weapons.length === 0) {
+        ui.notifications.warn("Du hast keine Waffen, die vergiftet werden können.");
+        return;
+    }
+
+    if (poisons.length === 0) {
+        ui.notifications.warn("Du hast keine Gifte im Inventar.");
+        return;
+    }
+
+    let weaponOptions = weapons.map(w => `<option value="${w.id}">${w.name}</option>`).join("");
+    let poisonOptions = poisons.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
 
     let content = `
         <form>
             <div class="form-group">
-                <label>Waffe auswählen:</label>
-                <select id="weapon-select">
-                    ${weapons.map(weapon => `<option value="${weapon.id}">${weapon.name}</option>`).join("")}
-                </select>
+                <label>Waffe:</label>
+                <select id="weapon">${weaponOptions}</select>
             </div>
             <div class="form-group">
-                <label>Gift auswählen:</label>
-                <select id="poison-select">
-                    ${poisons.map(poison => `<option value="${poison.id}">${poison.name}</option>`).join("")}
-                </select>
+                <label>Gift:</label>
+                <select id="poison">${poisonOptions}</select>
             </div>
         </form>
     `;
@@ -45,9 +67,9 @@
         buttons: {
             apply: {
                 label: "Anwenden",
-                callback: html => {
-                    let weaponId = html.find("#weapon-select").val();
-                    let poisonId = html.find("#poison-select").val();
+                callback: (html) => {
+                    let weaponId = html.find("#weapon").val();
+                    let poisonId = html.find("#poison").val();
                     applyPoison(actor, weaponId, poisonId);
                 }
             },
@@ -58,17 +80,10 @@
     }).render(true);
 }
 
-import { applyPoisonEffect } from "./effects.js";
-
-async function applyPoison(actor, weaponId, poisonId) {
-    let weapon = actor.items.get(weaponId);
-    let poison = actor.items.get(poisonId);
-
-    if (!weapon || !poison) {
-        ui.notifications.error("Fehler beim Anwenden des Gifts.");
-        return;
-    }
-
-    // Die separate Funktion aus effects.js aufrufen
-    await applyPoisonEffect(actor, weapon, poison);
+// 🛠 Exportiere die Hauptfunktion zur Nutzung in Foundry
+export function registerPoisonApplier() {
+    game.modules.get("poison-applier").api = {
+        showPoisonDialog
+    };
 }
+
