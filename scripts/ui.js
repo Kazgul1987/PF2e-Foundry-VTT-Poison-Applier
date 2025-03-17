@@ -32,8 +32,16 @@ async function applyPoison(actor, weaponId, poisonId) {
 
 // 🛠 Dialog zur Auswahl der Waffe und des Gifts
 async function showPoisonDialog(actor) {
+    if (!actor) {
+        ui.notifications.error("Kein gültiger Schauspieler (Actor) ausgewählt.");
+        return;
+    }
+
+    console.log(`📌 Gewählter Actor: ${actor.name}`, actor);
+
     let weapons = getWeapons(actor);
     let poisons = getPoisons(actor);
+
 
     if (weapons.length === 0) {
         ui.notifications.warn("Du hast keine Waffen, die vergiftet werden können.");
