@@ -15,7 +15,7 @@ function applyPoisonDialog(li) {
     let actor = game.actors.get(actorId);
     
     if (!actor) {
-        ui.notifications.error("Kein gültiger Schauspieler gefunden.");
+        ui.notifications.error("Kein gültiger Actor gefunden.");
         return;
     }
 
