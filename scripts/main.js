@@ -1,13 +1,10 @@
+import { registerPoisonApplier } from "./ui.js";
+
 Hooks.once("ready", async () => {
     console.log("🔹 Poison Applier Modul geladen!");
 
-    // API registrieren
-    game.modules.get("poison-applier").api = {
-        showPoisonDialog: () => {
-            console.log("🎭 Das Gift-Dialogfenster wird geöffnet...");
-            game.poisonApplier.showPoisonDialog();
-        }
-    };
+    // Registriere die API für das Modul
+    registerPoisonApplier();
 
     // Makro erstellen (Falls nicht vorhanden)
     let macro = game.macros.find(m => m.name === "Poison Applicator");
@@ -22,7 +19,7 @@ Hooks.once("ready", async () => {
                     ui.notifications.warn("Bitte ein Token auswählen!");
                     return;
                 }
-                game.modules.get("poison-applier").api.showPoisonDialog();
+                game.modules.get("poison-applier").api.showPoisonDialog(canvas.tokens.controlled[0].actor);
             `,
             img: "icons/skills/toxins/poison-bottle-green.webp"
         });
