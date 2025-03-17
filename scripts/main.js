@@ -1,13 +1,18 @@
-Hooks.on("ready", async () => {
+Hooks.once("ready", async () => {
     console.log("🔹 Poison Applier Modul geladen!");
 
-    // Überprüfen, ob das Makro bereits existiert
-    let macro = game.macros.find(m => m.name === "Poison Applicator");
+    // API registrieren
+    game.modules.get("poison-applier").api = {
+        showPoisonDialog: () => {
+            console.log("🎭 Das Gift-Dialogfenster wird geöffnet...");
+            game.poisonApplier.showPoisonDialog();
+        }
+    };
 
+    // Makro erstellen (Falls nicht vorhanden)
+    let macro = game.macros.find(m => m.name === "Poison Applicator");
     if (!macro) {
         console.log("🛠️ Erstelle neues Makro für Poison Applicator...");
-        
-        // Makro erstellen
         macro = await Macro.create({
             name: "Poison Applicator",
             type: "script",
@@ -21,7 +26,6 @@ Hooks.on("ready", async () => {
             `,
             img: "icons/skills/toxins/poison-bottle-green.webp"
         });
-
         console.log("✅ Makro erfolgreich erstellt:", macro);
     } else {
         console.log("✅ Makro existiert bereits.");
