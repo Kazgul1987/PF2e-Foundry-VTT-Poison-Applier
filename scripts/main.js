@@ -1,24 +1,24 @@
-console.log("Giftapplikator Modul geladen!");
+import { registerPoisonApplier, showPoisonDialog } from "./ui.js";
 
-// Füge eine Option zum Kontextmenü des Tokens hinzu
-Hooks.on("getActorDirectoryEntryContext", (html, options) => {
-    options.push({
-        name: "Gift auf Waffe auftragen",
-        icon: '<i class="fas fa-flask"></i>',
-        callback: li => applyPoisonDialog(li)
-    });
+// 🛠 Initialisierung des Moduls bei Foundry-Start
+Hooks.once("init", () => {
+    console.log("✅ Poison Applier Modul wird initialisiert...");
+
+    // Registriere die API-Funktion für externe Nutzung
+    game.modules.get("poison-applier").api = {
+        showPoisonDialog
+    };
 });
 
-// Öffnet den Dialog zur Auswahl von Waffe & Gift
-function applyPoisonDialog(li) {
-    let actorId = li.data("documentId");
-    let actor = game.actors.get(actorId);
-    
-    if (!actor) {
-        ui.notifications.error("Kein gültiger Actor gefunden.");
-        return;
-    }
+// 🛠 Debugging: Zeigt an, wenn das Modul bereit ist
+Hooks.once("ready", () => {
+    console.log("✅ Poison Applier Modul ist bereit!");
+});
 
-    // Importiere die UI-Funktion und öffne den Dialog
-    import("./ui.js").then(module => module.showPoisonDialog(actor));
-}
+// 🛠 Optional: Ein Befehl für die Konsole, um das Dialogfenster zu öffnen
+Hooks.on("renderActorSheet", (app, html, data) => {
+    if (game.user.isGM) {
+        console.log("🛠 Poison Applier API ist verfügbar unter:");
+        console.log("game.modules.get('poison-applier').api.showPoisonDialog(actor)");
+    }
+});
