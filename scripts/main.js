@@ -19,7 +19,12 @@ Hooks.once("ready", async () => {
                     ui.notifications.warn("Bitte ein Token auswählen!");
                     return;
                 }
-                game.modules.get("poison-applier").api.showPoisonDialog(canvas.tokens.controlled[0].actor);
+                let selectedActor = canvas.tokens.controlled[0]?.actor;
+                if (!selectedActor) {
+                    ui.notifications.error("Kein gültiger Actor gefunden!");
+                    return;
+                }
+                game.modules.get("poison-applier").api.showPoisonDialog(selectedActor);
             `,
             img: "icons/skills/toxins/poison-bottle-green.webp"
         });
