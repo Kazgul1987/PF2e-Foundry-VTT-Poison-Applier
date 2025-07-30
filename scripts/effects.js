@@ -61,7 +61,7 @@ export async function applyPoisonEffect(actor, weapon, poison) {
             },
             system: {
                 description: {
-                    value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet.</p>` +
+                    value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
                         `<p>Nutze @UUID[${poison.uuid}] für alle Würfe.</p>`
                 },
                 duration: { value: 10, unit: "rounds" },
