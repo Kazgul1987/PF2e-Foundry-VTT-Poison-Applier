@@ -28,7 +28,7 @@ export async function applyPoisonEffect(actor, weapon, poison) {
 
         effectData.system ??= {};
         effectData.system.description ??= {};
-        effectData.system.description.value = `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet.</p>` +
+        effectData.system.description.value = `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
             effectData.system.description.value;
         effectData.system.duration = { value: 10, unit: 'rounds' };
         effectData.system.tokenIcon = { show: true };
