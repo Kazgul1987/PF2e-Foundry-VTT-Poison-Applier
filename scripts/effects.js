@@ -15,6 +15,9 @@ export async function applyPoisonEffect(actor, weapon, poison) {
     }
 
     // 🎯 Effekt als echtes PF2e-Item hinzufügen (sichtbar in der Effekt-Liste)
+//d6xli7-codex/makro-fur-poison-applicator-hinzufugen
+    const poisonDesc = poison.system?.description?.value || "";
+    const poisonDescGm = poison.system?.description?.gm || "";
 //8dux3v-codex/makro-fur-poison-applicator-hinzufugen
     let effectData;
 
@@ -42,6 +45,7 @@ export async function applyPoisonEffect(actor, weapon, poison) {
                 core: {
                     sourceId: poison.uuid
                 }
+//main
     const effectData = {
         name: `Vergiftete Waffe (${poison.name})`,
         type: "effect",
@@ -53,6 +57,9 @@ export async function applyPoisonEffect(actor, weapon, poison) {
         },
         system: {
             description: {
+//d6xli7-codex/makro-fur-poison-applicator-hinzufugen
+                value: `<p>Diese Waffe wurde mit @UUID[${poison.uuid}] vergiftet.</p><hr>${poisonDesc}`,
+                gm: poisonDescGm
 //lqjd3e-codex/makro-fur-poison-applicator-hinzufugen
                 value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet.</p>` +
                     `<p>Nutze @UUID[${poison.uuid}] für alle Würfe.</p>`
@@ -61,7 +68,7 @@ export async function applyPoisonEffect(actor, weapon, poison) {
                       // `<p>Nutze @UUID[${poison.uuid}] für alle Würfe.</p>`
                       // `<p>Nutze @UUID[${poison.uuid}]{${poison.name}} für alle Würfe.</p>`
 // main
-            },
+          },
             system: {
                 description: {
                     value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
