@@ -20,11 +20,14 @@ export async function applyPoisonEffect(actor, weapon, poison) {
         type: "effect",
         img: poison.img,
         system: {
-            description: { value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet.</p>` },
+            description: {
+                value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet.</p>` +
+                       `<p>Nutze @UUID[Actor.${actor.id}.Item.${poison.id}]{${poison.name}} für alle Würfe.</p>`
+            },
             duration: { value: 10, unit: "rounds" },
             tokenIcon: { show: true },
             rules: [],
-            slug: `poisoned-weapon-${actor.id}`
+            slug: `poisoned-weapon-${actor.id}-${weapon.id}`
         }
     };
 
@@ -35,15 +38,11 @@ export async function applyPoisonEffect(actor, weapon, poison) {
         console.error("❌ Fehler beim Hinzufügen des Effekts am Token:", error);
     }
 
-    // 🎯 Das Gift aus dem Inventar entfernen oder reduzieren
+    // 🎯 Die Menge des Gifts im Inventar verringern
     let newQuantity = (poison.system.quantity ?? 1) - 1;
-    if (newQuantity <= 0) {
-        await poison.delete();
-        console.log(`🗑️ ${poison.name} wurde aus dem Inventar entfernt.`);
-    } else {
-        await poison.update({ "system.quantity": newQuantity });
-        console.log(`🔢 ${poison.name} wurde reduziert auf ${newQuantity}.`);
-    }
+    if (newQuantity < 0) newQuantity = 0;
+    await poison.update({ "system.quantity": newQuantity });
+    console.log(`🔢 ${poison.name} wurde reduziert auf ${newQuantity}.`);
 
     // 💬 Nachricht im Chat posten
     ChatMessage.create({
