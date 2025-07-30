@@ -53,10 +53,13 @@ export async function applyPoisonEffect(actor, weapon, poison) {
         },
         system: {
             description: {
+//lqjd3e-codex/makro-fur-poison-applicator-hinzufugen
+                value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet.</p>` +
+                    `<p>Nutze @UUID[${poison.uuid}] für alle Würfe.</p>`
                 value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
 // xrqeqz-codex/makro-fur-poison-applicator-hinzufugen
-                       `<p>Nutze @UUID[${poison.uuid}] für alle Würfe.</p>`
-                       `<p>Nutze @UUID[${poison.uuid}]{${poison.name}} für alle Würfe.</p>`
+                      // `<p>Nutze @UUID[${poison.uuid}] für alle Würfe.</p>`
+                      // `<p>Nutze @UUID[${poison.uuid}]{${poison.name}} für alle Würfe.</p>`
 // main
             },
             system: {
