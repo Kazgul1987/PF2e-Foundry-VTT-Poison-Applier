@@ -15,6 +15,7 @@ export async function applyPoisonEffect(actor, weapon, poison) {
     }
 
     // 🎯 Effekt als echtes PF2e-Item hinzufügen (sichtbar in der Effekt-Liste)
+//8dux3v-codex/makro-fur-poison-applicator-hinzufugen
     let effectData;
 
     if (game.modules.get('pf2e-extempore-effects')?.active && window.pf2eExtempore?.createEffect) {
@@ -41,6 +42,22 @@ export async function applyPoisonEffect(actor, weapon, poison) {
                 core: {
                     sourceId: poison.uuid
                 }
+    const effectData = {
+        name: `Vergiftete Waffe (${poison.name})`,
+        type: "effect",
+        img: poison.img,
+        flags: {
+            core: {
+                sourceId: poison.uuid
+            }
+        },
+        system: {
+            description: {
+                value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet.</p>` +
+// xrqeqz-codex/makro-fur-poison-applicator-hinzufugen
+                       `<p>Nutze @UUID[${poison.uuid}] für alle Würfe.</p>`
+                       `<p>Nutze @UUID[${poison.uuid}]{${poison.name}} für alle Würfe.</p>`
+// main
             },
             system: {
                 description: {
