@@ -2,7 +2,7 @@
   "id": "poison-applier",
   "title": "PF2e Poison-Applier",
   "description": "Ermöglicht das Auftragen von Giften auf Waffen mit visuellen Effekten.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "compatibility": {
     "minimum": "11",
