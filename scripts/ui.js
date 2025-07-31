@@ -53,21 +53,8 @@ async function showPoisonDialog(actor) {
         return;
     }
 
-    let weaponOptions = weapons.map(w => `<option value="${w.id}">${w.name}</option>`).join("");
-    let poisonOptions = poisons.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
-
-    let content = `
-        <form>
-            <div class="form-group">
-                <label>Waffe:</label>
-                <select id="weapon">${weaponOptions}</select>
-            </div>
-            <div class="form-group">
-                <label>Gift:</label>
-                <select id="poison">${poisonOptions}</select>
-            </div>
-        </form>
-    `;
+    const templatePath = "modules/poison-applier/templates/apply-poison.html";
+    const content = await renderTemplate(templatePath, { weapons, poisons });
 
     new Dialog({
         title: "Gift auf Waffe auftragen",
