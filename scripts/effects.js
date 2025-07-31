@@ -15,7 +15,7 @@ export async function applyPoisonEffect(actor, weapon, poison) {
     }
 
     // 🎯 Effekt als echtes PF2e-Item hinzufügen (sichtbar in der Effekt-Liste)
-//d6xli7-codex/makro-fur-poison-applicator-hinzufugen
+//wnwig2-codex/makro-fur-poison-applicator-hinzufugen
     const poisonDesc = poison.system?.description?.value || "";
     const poisonDescGm = poison.system?.description?.gm || "";
 //8dux3v-codex/makro-fur-poison-applicator-hinzufugen
@@ -57,6 +57,17 @@ export async function applyPoisonEffect(actor, weapon, poison) {
         },
         system: {
             description: {
+//wnwig2-codex/makro-fur-poison-applicator-hinzufugen
+                value: `<p>Diese Waffe wurde mit @UUID[${poison.uuid}] vergiftet.</p><hr>${poisonDesc}`,
+                gm: poisonDescGm
+            },
+            duration: { value: 10, unit: "rounds" },
+            tokenIcon: { show: true },
+            rules: [],
+            slug: `poisoned-weapon-${actor.id}-${weapon.id}`
+        }
+    };
+
 //d6xli7-codex/makro-fur-poison-applicator-hinzufugen
                 value: `<p>Diese Waffe wurde mit @UUID[${poison.uuid}] vergiftet.</p><hr>${poisonDesc}`,
                 gm: poisonDescGm
@@ -81,6 +92,7 @@ export async function applyPoisonEffect(actor, weapon, poison) {
             }
         };
     }
+//main
 
     try {
         await actor.createEmbeddedDocuments("Item", [effectData]);
