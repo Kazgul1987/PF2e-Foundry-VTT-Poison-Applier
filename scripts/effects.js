@@ -1,117 +1,46 @@
 export async function applyPoisonEffect(actor, weapon, poison) {
-    console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
+  console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
 
-    // 🎯 Effekt für die Waffe setzen (im Angriff)
-    let attackEffects = weapon.system.attackEffects?.value || [];
-    if (!attackEffects.includes("poison")) {
-        attackEffects.push("poison");
+  // Add poison trait to the weapon's attack effects
+  const attackEffects = Array.from(weapon.system.attackEffects?.value || []);
+  if (!attackEffects.includes("poison")) {
+    attackEffects.push("poison");
+    await weapon.update({"system.attackEffects.value": attackEffects});
+  }
+
+  const effectData = {
+    name: `Vergiftete Waffe (${poison.name})`,
+    type: "effect",
+    img: poison.img,
+    flags: {
+      core: { sourceId: poison.uuid }
+    },
+    system: {
+      slug: `poisoned-weapon-${actor.id}-${weapon.id}`,
+      tokenIcon: { show: true },
+      duration: { value: 10, unit: "rounds" },
+      rules: [],
+      description: {
+        value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
+               (poison.system?.description?.value || ""),
+        gm: poison.system?.description?.gm || ""
+      }
     }
+  };
 
-    try {
-        await weapon.update({ "system.attackEffects.value": attackEffects });
-        console.log("🛠️ Waffe aktualisiert mit Gift-Effekt:", attackEffects);
-    } catch (error) {
-        console.error("❌ Fehler beim Anwenden des Effekts auf die Waffe:", error);
-    }
+  try {
+    await actor.createEmbeddedDocuments("Item", [effectData]);
+  } catch (error) {
+    console.error("❌ Fehler beim Hinzufügen des Effekts am Token:", error);
+  }
 
-    // 🎯 Effekt als echtes PF2e-Item hinzufügen (sichtbar in der Effekt-Liste)
-//wnwig2-codex/makro-fur-poison-applicator-hinzufugen
-    const poisonDesc = poison.system?.description?.value || "";
-    const poisonDescGm = poison.system?.description?.gm || "";
-//8dux3v-codex/makro-fur-poison-applicator-hinzufugen
-    let effectData;
+  const newQuantity = Math.max((poison.system.quantity ?? 1) - 1, 0);
+  await poison.update({"system.quantity": newQuantity});
 
-    if (game.modules.get('pf2e-extempore-effects')?.active && window.pf2eExtempore?.createEffect) {
-        effectData = await window.pf2eExtempore.createEffect(poison);
+  ChatMessage.create({
+    content: `<b>${actor.name}</b> hat <b>${poison.name}</b> auf <b>${weapon.name}</b> angewendet!`,
+    speaker: ChatMessage.getSpeaker({actor})
+  });
 
-        effectData.name = `Vergiftete Waffe (${poison.name})`;
-        effectData.flags ??= {};
-        effectData.flags.core ??= {};
-        effectData.flags.core.sourceId = poison.uuid;
-
-        effectData.system ??= {};
-        effectData.system.description ??= {};
-        effectData.system.description.value = `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
-            effectData.system.description.value;
-        effectData.system.duration = { value: 10, unit: 'rounds' };
-        effectData.system.tokenIcon = { show: true };
-        effectData.system.slug = `poisoned-weapon-${actor.id}-${weapon.id}`;
-    } else {
-        effectData = {
-            name: `Vergiftete Waffe (${poison.name})`,
-            type: "effect",
-            img: poison.img,
-            flags: {
-                core: {
-                    sourceId: poison.uuid
-                }
-//main
-    const effectData = {
-        name: `Vergiftete Waffe (${poison.name})`,
-        type: "effect",
-        img: poison.img,
-        flags: {
-            core: {
-                sourceId: poison.uuid
-            }
-        },
-        system: {
-            description: {
-//wnwig2-codex/makro-fur-poison-applicator-hinzufugen
-                value: `<p>Diese Waffe wurde mit @UUID[${poison.uuid}] vergiftet.</p><hr>${poisonDesc}`,
-                gm: poisonDescGm
-            },
-            duration: { value: 10, unit: "rounds" },
-            tokenIcon: { show: true },
-            rules: [],
-            slug: `poisoned-weapon-${actor.id}-${weapon.id}`
-        }
-    };
-
-//d6xli7-codex/makro-fur-poison-applicator-hinzufugen
-                value: `<p>Diese Waffe wurde mit @UUID[${poison.uuid}] vergiftet.</p><hr>${poisonDesc}`,
-                gm: poisonDescGm
-//lqjd3e-codex/makro-fur-poison-applicator-hinzufugen
-                value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet.</p>` +
-                    `<p>Nutze @UUID[${poison.uuid}] für alle Würfe.</p>`
-                value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
-// xrqeqz-codex/makro-fur-poison-applicator-hinzufugen
-                      // `<p>Nutze @UUID[${poison.uuid}] für alle Würfe.</p>`
-                      // `<p>Nutze @UUID[${poison.uuid}]{${poison.name}} für alle Würfe.</p>`
-// main
-          },
-            system: {
-                description: {
-                    value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
-                        `<p>Nutze @UUID[${poison.uuid}] für alle Würfe.</p>`
-                },
-                duration: { value: 10, unit: "rounds" },
-                tokenIcon: { show: true },
-                rules: [],
-                slug: `poisoned-weapon-${actor.id}-${weapon.id}`
-            }
-        };
-    }
-//main
-
-    try {
-        await actor.createEmbeddedDocuments("Item", [effectData]);
-        console.log("🛠️ Effekt erfolgreich auf Token angewendet:", effectData);
-    } catch (error) {
-        console.error("❌ Fehler beim Hinzufügen des Effekts am Token:", error);
-    }
-
-    // 🎯 Die Menge des Gifts im Inventar verringern
-    let newQuantity = (poison.system.quantity ?? 1) - 1;
-    if (newQuantity < 0) newQuantity = 0;
-    await poison.update({ "system.quantity": newQuantity });
-    console.log(`🔢 ${poison.name} wurde reduziert auf ${newQuantity}.`);
-
-    // 💬 Nachricht im Chat posten
-    ChatMessage.create({
-        content: `<b>${actor.name}</b> hat <b>${poison.name}</b> auf <b>${weapon.name}</b> angewendet! Die Waffe ist jetzt vergiftet!`,
-        speaker: ChatMessage.getSpeaker({ actor: actor })
-    });
-
-    ui.notifications.info(`${poison.name} wurde auf ${weapon.name} angewendet.`);
+  ui.notifications.info(`${poison.name} wurde auf ${weapon.name} angewendet.`);
 }
