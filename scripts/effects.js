@@ -15,14 +15,21 @@ export async function applyPoisonEffect(actor, weapon, poison) {
     }
 
     // 🎯 Effekt als echtes PF2e-Item hinzufügen (sichtbar in der Effekt-Liste)
+    const poisonDesc = poison.system?.description?.value || "";
+    const poisonDescGm = poison.system?.description?.gm || "";
     const effectData = {
         name: `Vergiftete Waffe (${poison.name})`,
         type: "effect",
         img: poison.img,
+        flags: {
+            core: {
+                sourceId: poison.uuid
+            }
+        },
         system: {
             description: {
-                value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet.</p>` +
-                       `<p>Nutze @UUID[Actor.${actor.id}.Item.${poison.id}]{${poison.name}} für alle Würfe.</p>`
+                value: `<p>Diese Waffe wurde mit @UUID[${poison.uuid}] vergiftet.</p><hr>${poisonDesc}`,
+                gm: poisonDescGm
             },
             duration: { value: 10, unit: "rounds" },
             tokenIcon: { show: true },
