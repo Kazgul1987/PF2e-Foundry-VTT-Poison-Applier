@@ -1,4 +1,5 @@
 import { registerPoisonApplier } from "./ui.js";
+import { postPoisonEffectOnHit } from "./effects.js";
 
 Hooks.once("ready", async () => {
     console.log("🔹 Poison Applier Modul geladen!");
@@ -32,4 +33,6 @@ Hooks.once("ready", async () => {
     } else {
         console.log("✅ Makro existiert bereits.");
     }
+
+    Hooks.on("createChatMessage", postPoisonEffectOnHit);
 });
