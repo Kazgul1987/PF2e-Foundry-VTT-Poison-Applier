@@ -49,7 +49,7 @@ export async function postPoisonEffectOnHit(message) {
   const context = message.flags?.pf2e?.context;
   if (!context) return;
   const outcome = context.outcome;
-  if (!["success", "criticalSuccess"].includes(outcome)) return;
+  if (!["success", "criticalSuccess", "criticalFailure"].includes(outcome)) return;
 
   const actor = message.actor ?? game.actors.get(message.speaker.actor);
   if (!actor) return;
@@ -68,5 +68,10 @@ export async function postPoisonEffectOnHit(message) {
   const effect = actor.items.find(i => i.type === "effect" && i.system?.slug === slug);
   if (!effect) return;
 
-  effect.toMessage({}, { create: true });
+  if (["success", "criticalSuccess"].includes(outcome)) {
+    await effect.toMessage({}, { create: true });
+  }
+  await actor.deleteEmbeddedDocuments("Item", [effect.id]);
+  const updatedEffects = effects.filter(e => e !== "poison");
+  await weapon.update({"system.attackEffects.value": updatedEffects});
 }
