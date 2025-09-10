@@ -9,7 +9,7 @@ export async function applyPoisonEffect(actor, weapon, poison) {
   }
 
   const effectData = {
-    name: `Vergiftete Waffe (${poison.name})`,
+    name: `Vergiftete ${weapon.name} (${poison.name})`,
     type: "effect",
     img: poison.img,
     flags: {
@@ -21,7 +21,7 @@ export async function applyPoisonEffect(actor, weapon, poison) {
       duration: { value: 10, unit: "rounds" },
       rules: [],
       description: {
-        value: `<p>Diese Waffe wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
+        value: `<p><strong>${weapon.name}</strong> wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
                (poison.system?.description?.value || ""),
         gm: poison.system?.description?.gm || ""
       }
