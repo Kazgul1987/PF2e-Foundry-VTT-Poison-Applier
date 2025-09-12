@@ -1,8 +1,10 @@
+const MODULE_ID = "poison-applier";
+
 export async function applyPoisonEffect(actor, weapon, poison) {
   console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
 
   // Mark the weapon as poisoned via a flag
-  await weapon.setFlag("pf2e-poison-applier", "poisoned", true);
+  await weapon.setFlag(MODULE_ID, "poisoned", true);
 
   const effectData = {
     name: `Vergiftete ${weapon.name} (${poison.name})`,
@@ -64,7 +66,7 @@ export async function postPoisonEffectOnHit(message) {
 
   const weapon = await fromUuid(weaponUuid);
   if (!weapon || weapon.type !== "weapon") return;
-  const poisoned = weapon.getFlag("pf2e-poison-applier", "poisoned");
+  const poisoned = weapon.getFlag(MODULE_ID, "poisoned");
   if (!poisoned) {
     console.warn(`Poison Applier | weapon ${weapon.name} lacks poison flag.`);
     return;
@@ -86,5 +88,5 @@ export async function postPoisonEffectOnHit(message) {
     }
   }
   await actor.deleteEmbeddedDocuments("Item", [effect.id]);
-  await weapon.unsetFlag("pf2e-poison-applier", "poisoned");
+  await weapon.unsetFlag(MODULE_ID, "poisoned");
 }
