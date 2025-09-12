@@ -1,12 +1,8 @@
 export async function applyPoisonEffect(actor, weapon, poison) {
   console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
 
-  // Add poison trait to the weapon's attack effects
-  const attackEffects = Array.from(weapon.system.attackEffects?.value || []);
-  if (!attackEffects.includes("poison")) {
-    attackEffects.push("poison");
-    await weapon.update({"system.attackEffects.value": attackEffects});
-  }
+  // Mark the weapon as poisoned via a flag
+  await weapon.setFlag("pf2e-poison-applier", "poisoned", true);
 
   const effectData = {
     name: `Vergiftete ${weapon.name} (${poison.name})`,
@@ -68,9 +64,9 @@ export async function postPoisonEffectOnHit(message) {
 
   const weapon = await fromUuid(weaponUuid);
   if (!weapon || weapon.type !== "weapon") return;
-  const effects = Array.from(weapon.system.attackEffects?.value || []);
-  if (!effects.includes("poison")) {
-    console.warn(`Poison Applier | weapon ${weapon.name} lacks poison attack effect.`);
+  const poisoned = weapon.getFlag("pf2e-poison-applier", "poisoned");
+  if (!poisoned) {
+    console.warn(`Poison Applier | weapon ${weapon.name} lacks poison flag.`);
     return;
   }
 
@@ -82,6 +78,5 @@ export async function postPoisonEffectOnHit(message) {
     await effect.toMessage({}, { create: true });
   }
   await actor.deleteEmbeddedDocuments("Item", [effect.id]);
-  const updatedEffects = effects.filter(e => e !== "poison");
-  await weapon.update({"system.attackEffects.value": updatedEffects});
+  await weapon.unsetFlag("pf2e-poison-applier", "poisoned");
 }
