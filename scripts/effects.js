@@ -76,6 +76,14 @@ export async function postPoisonEffectOnHit(message) {
 
   if (["success", "criticalSuccess"].includes(outcome)) {
     await effect.toMessage({}, { create: true });
+    const aa = game.modules.get("autoanimations")?.API;
+    if (aa) {
+      aa.playAnimation(token, {
+        animation: "jb2a.poison.spray.green",
+        source: token,
+        target: message?.targets?.[0]
+      });
+    }
   }
   await actor.deleteEmbeddedDocuments("Item", [effect.id]);
   await weapon.unsetFlag("pf2e-poison-applier", "poisoned");
