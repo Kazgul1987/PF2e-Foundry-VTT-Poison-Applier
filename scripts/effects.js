@@ -1,3 +1,5 @@
+import { DegreeOfSuccess } from "@system/degree-of-success.ts";
+
 const MODULE_ID = "poison-applier";
 
 export async function applyPoisonEffect(actor, weapon, poison) {
@@ -76,13 +78,14 @@ export async function postPoisonEffectOnHit(message) {
     return;
   }
 
-  if (!["success", "criticalSuccess", "criticalFailure"].includes(outcome)) return;
-
   const slug = `poisoned-weapon-${actor.id}-${weapon.id}`;
   const effect = actor.items.find(i => i.type === "effect" && i.system?.slug === slug);
   if (!effect) return;
 
-  if (["success", "criticalSuccess"].includes(outcome)) {
+  const roll = message.rolls?.[0];
+  const dc = context.dc?.value;
+  const dos = new DegreeOfSuccess(roll, dc);
+  if (dos.value >= DegreeOfSuccess.SUCCESS) {
     await effect.toMessage({}, { create: true });
     const aa = game.modules.get("autoanimations")?.API;
     if (aa) {
