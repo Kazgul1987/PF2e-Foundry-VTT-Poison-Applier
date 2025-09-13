@@ -10,11 +10,11 @@ export async function applyPoisonEffect(actor, weapon, poison) {
     name: `Vergiftete ${weapon.name} (${poison.name})`,
     type: "effect",
     img: poison.img,
+    slug: `poisoned-weapon-${actor.id}-${weapon.id}`,
     flags: {
       core: { sourceId: poison.uuid }
     },
     system: {
-      slug: `poisoned-weapon-${actor.id}-${weapon.id}`,
       tokenIcon: { show: true },
       duration: { value: 10, unit: "rounds" },
       rules: [],
@@ -78,7 +78,7 @@ export async function postPoisonEffectOnHit(message) {
   }
 
   const slug = `poisoned-weapon-${actor.id}-${weapon.id}`;
-  const effect = actor.items.find(i => i.type === "effect" && i.system?.slug === slug);
+  const effect = actor.items.find(i => i.type === "effect" && i.slug === slug);
   if (!effect) return;
   if (["success", "criticalSuccess"].includes(outcome)) {
     await effect.toMessage({}, { create: true });
