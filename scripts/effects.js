@@ -56,7 +56,7 @@ export async function postPoisonEffectOnHit(message) {
     return;
   }
 
-  const weaponUuid = message.flags?.pf2e?.weaponUuid
+  const weaponUuid = message.item?.uuid
     ?? message.flags?.pf2e?.strike?.item?.uuid
     ?? message.flags?.pf2e?.origin?.uuid;
   if (!weaponUuid) {
