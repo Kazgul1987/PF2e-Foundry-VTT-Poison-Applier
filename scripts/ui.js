@@ -57,7 +57,7 @@ async function showPoisonDialog(actor) {
     const content = await renderTemplate(templatePath, { weapons, poisons });
 
     new Dialog({
-        title: "Apply poison to weapon",
+        title: "Apply Poison to Weapon",
         content,
         buttons: {
             apply: {
