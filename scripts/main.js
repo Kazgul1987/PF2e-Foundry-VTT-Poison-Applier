@@ -40,7 +40,7 @@ Hooks.once("ready", async () => {
                 }
                 game.modules.get("poison-applier").api.showPoisonDialog(selectedActor);
             `,
-            img: "icons/skills/toxins/poison-bottle-green.webp"
+            img: "systems/pf2e/icons/equipment/alchemical-items/alchemical-poisons.webp"
         });
         console.log("✅ Macro successfully created:", macro);
     } else {
