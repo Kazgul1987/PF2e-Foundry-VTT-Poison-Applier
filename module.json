@@ -1,7 +1,7 @@
 {
   "id": "poison-applier",
   "title": "PF2e Poison-Applier",
-  "description": "Allows applying poisons to weapons with visual effects.",
+  "description": "Allows you to apply poisons to weapons with visual effects.",
   "version": "1.2.0",
   "type": "module",
   "compatibility": {
@@ -33,6 +33,11 @@
   "styles": ["styles/style.css"],
   "packs": [],
   "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
     {
       "lang": "de",
       "name": "Deutsch",
