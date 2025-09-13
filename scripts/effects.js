@@ -11,11 +11,11 @@ export async function applyPoisonEffect(actor, weapon, poison) {
     name: `Vergiftete ${weapon.name} (${poison.name})`,
     type: "effect",
     img: poison.img,
-    slug,
     flags: {
       core: { sourceId: poison.uuid }
     },
     system: {
+      slug,
       tokenIcon: { show: true },
       duration: { value: 10, unit: "rounds" },
       rules: [],
