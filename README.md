@@ -1,6 +1,15 @@
 # PF2e-Foundry-VTT-Poison-Applier
 
+[Deutsch](README.de.md)
+
 This module makes it easier to track the use of poisons in Foundry VTT. After application, it clearly shows which weapon has been treated with which poison.
+
+## Installation
+
+1. In Foundry VTT's Setup screen, open the "Add-on Modules" tab.
+2. Click "Install Module".
+3. Enter the following Manifest URL and confirm: https://raw.githubusercontent.com/Kazgul1987/PF2e-Foundry-VTT-Poison-Applier/main/module.json
+4. Activate the module in your world from the "Manage Modules" dialog.
 
 ## Usage
 
@@ -10,6 +19,7 @@ After selection, an effect is added to the token. This effect links to the in-ga
 
 Compatible with Foundry VTT v13.
 
-### Animations
+## Dependencies
 
-To play a jB2A animation on a hit, the [Automated Animations](https://foundryvtt.com/packages/autoanimations) module and a suitable jB2A asset pack must be installed and active.
+- System: Pathfinder Second Edition (minimum 5.0.0, verified 6.1.0).
+- For hit animations, install the [Automated Animations](https://foundryvtt.com/packages/autoanimations) module and a suitable jB2A asset pack.
