@@ -1,4 +1,5 @@
 const MODULE_ID = "poison-applier";
+const { DegreeOfSuccess } = game.pf2e;
 
 export async function applyPoisonEffect(actor, weapon, poison) {
   console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
@@ -76,13 +77,14 @@ export async function postPoisonEffectOnHit(message) {
     return;
   }
 
-  if (!["success", "criticalSuccess", "criticalFailure"].includes(outcome)) return;
-
   const slug = `poisoned-weapon-${actor.id}-${weapon.id}`;
   const effect = actor.items.find(i => i.type === "effect" && i.system?.slug === slug);
   if (!effect) return;
 
-  if (["success", "criticalSuccess"].includes(outcome)) {
+  const roll = message.rolls?.[0];
+  const dc = context.dc?.value;
+  const dos = roll && dc ? new DegreeOfSuccess(roll, dc) : null;
+  if (dos && dos.value >= DegreeOfSuccess.SUCCESS) {
     await effect.toMessage({}, { create: true });
     const aa = game.modules.get("autoanimations")?.API;
     if (aa) {
