@@ -1,6 +1,19 @@
 import { registerPoisonApplier } from "./ui.js";
 import { postPoisonEffectOnHit } from "./effects.js";
 
+const MODULE_ID = "poison-applier";
+
+Hooks.once("init", () => {
+    game.settings.register(MODULE_ID, "debug", {
+        name: "Debug-Ausgaben",
+        hint: "Aktiviere zusätzliche Debug-Ausgaben in der Konsole.",
+        scope: "client",
+        config: true,
+        type: Boolean,
+        default: false
+    });
+});
+
 Hooks.once("ready", async () => {
     console.log("🔹 Poison Applier Modul geladen!");
 
