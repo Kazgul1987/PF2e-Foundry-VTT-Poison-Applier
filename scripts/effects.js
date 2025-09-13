@@ -47,7 +47,8 @@ export async function postPoisonEffectOnHit(message) {
   const context = message.flags?.pf2e?.context;
   if (!context) return;
   const outcome = context.outcome;
-  if (!["success", "criticalSuccess", "criticalFailure"].includes(outcome)) return;
+  const isAttack = ["success", "criticalSuccess", "criticalFailure", "failure"].includes(outcome);
+  if (!isAttack) return;
 
   const token = canvas.tokens.get(message.speaker.token);
   const actor = token?.actor ?? message.actor ?? game.actors.get(message.speaker.actor);
@@ -67,10 +68,15 @@ export async function postPoisonEffectOnHit(message) {
   const weapon = await fromUuid(weaponUuid);
   if (!weapon || weapon.type !== "weapon") return;
   const poisoned = weapon.getFlag(MODULE_ID, "poisoned");
+  if (game.settings.get(MODULE_ID, "debug")) {
+    console.log(`Poison Applier | ${weapon.name} ${poisoned ? "hat ein Gift." : "hat kein Gift."}`);
+  }
   if (!poisoned) {
     console.warn(`Poison Applier | weapon ${weapon.name} lacks poison flag.`);
     return;
   }
+
+  if (!["success", "criticalSuccess", "criticalFailure"].includes(outcome)) return;
 
   const slug = `poisoned-weapon-${actor.id}-${weapon.id}`;
   const effect = actor.items.find(i => i.type === "effect" && i.system?.slug === slug);
