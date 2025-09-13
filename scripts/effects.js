@@ -6,11 +6,12 @@ export async function applyPoisonEffect(actor, weapon, poison) {
   // Mark the weapon as poisoned via a flag
   await weapon.setFlag(MODULE_ID, "poisoned", true);
 
+  const slug = `poisoned-weapon-${actor.id}-${weapon.id}`.toLowerCase();
   const effectData = {
     name: `Vergiftete ${weapon.name} (${poison.name})`,
     type: "effect",
     img: poison.img,
-    slug: `poisoned-weapon-${actor.id}-${weapon.id}`,
+    slug,
     flags: {
       core: { sourceId: poison.uuid }
     },
@@ -77,7 +78,7 @@ export async function postPoisonEffectOnHit(message) {
     return;
   }
 
-  const slug = `poisoned-weapon-${actor.id}-${weapon.id}`;
+  const slug = `poisoned-weapon-${actor.id}-${weapon.id}`.toLowerCase();
   const effect = actor.items.find(i => i.type === "effect" && i.slug === slug);
   if (!effect) return;
   if (["success", "criticalSuccess"].includes(outcome)) {
