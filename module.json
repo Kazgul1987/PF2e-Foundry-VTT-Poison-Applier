@@ -1,7 +1,7 @@
 {
   "id": "poison-applier",
   "title": "PF2e Poison-Applier",
-  "description": "Ermöglicht das Auftragen von Giften auf Waffen mit visuellen Effekten.",
+  "description": "Allows applying poisons to weapons with visual effects.",
   "version": "1.2.0",
   "type": "module",
   "compatibility": {
