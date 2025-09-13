@@ -16,13 +16,13 @@ async function applyPoison(actor, weaponId, poisonId) {
     let poison = actor.items.get(poisonId);
 
     if (!weapon || !poison) {
-        ui.notifications.error("Fehler beim Anwenden des Gifts.");
+        ui.notifications.error("Error applying poison.");
         return;
     }
 
-    // Sicherstellen, dass nur echte Waffen vergiftet werden können
+    // Ensure only actual weapons can be poisoned
     if (weapon.type !== "weapon") {
-        ui.notifications.error("Du kannst nur Waffen vergiften!");
+        ui.notifications.error("You can only poison weapons!");
         return;
     }
 
@@ -33,23 +33,23 @@ async function applyPoison(actor, weaponId, poisonId) {
 // 🛠 Dialog zur Auswahl der Waffe und des Gifts
 async function showPoisonDialog(actor) {
     if (!actor) {
-        ui.notifications.error("Kein gültiger Schauspieler (Actor) ausgewählt.");
+        ui.notifications.error("No valid actor selected.");
         return;
     }
 
-    console.log(`📌 Gewählter Actor: ${actor.name}`, actor);
+    console.log(`📌 Selected actor: ${actor.name}`, actor);
 
     let weapons = getWeapons(actor);
     let poisons = getPoisons(actor);
 
 
     if (weapons.length === 0) {
-        ui.notifications.warn("Du hast keine Waffen, die vergiftet werden können.");
+        ui.notifications.warn("You have no weapons that can be poisoned.");
         return;
     }
 
     if (poisons.length === 0) {
-        ui.notifications.warn("Du hast keine Gifte im Inventar.");
+        ui.notifications.warn("You have no poisons in your inventory.");
         return;
     }
 
@@ -57,11 +57,11 @@ async function showPoisonDialog(actor) {
     const content = await renderTemplate(templatePath, { weapons, poisons });
 
     new Dialog({
-        title: "Gift auf Waffe auftragen",
+        title: "Apply poison to weapon",
         content,
         buttons: {
             apply: {
-                label: "Anwenden",
+                label: "Apply",
                 callback: (html) => {
                     let weaponId = html.find("#weapon").val();
                     let poisonId = html.find("#poison").val();
@@ -69,7 +69,7 @@ async function showPoisonDialog(actor) {
                 }
             },
             cancel: {
-                label: "Abbrechen"
+                label: "Cancel"
             }
         }
     }).render(true);
