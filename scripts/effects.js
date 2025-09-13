@@ -1,14 +1,14 @@
 const MODULE_ID = "poison-applier";
 
 export async function applyPoisonEffect(actor, weapon, poison) {
-  console.log(`✅ ${actor.name} trägt ${poison.name} auf ${weapon.name} auf.`);
+  console.log(`✅ ${actor.name} applies ${poison.name} to ${weapon.name}.`);
 
   // Mark the weapon as poisoned via a flag
   await weapon.setFlag(MODULE_ID, "poisoned", true);
 
   const slug = `poisoned-weapon-${actor.id}-${weapon.id}`.toLowerCase();
   const effectData = {
-    name: `Vergiftete ${weapon.name} (${poison.name})`,
+    name: `Poisoned ${weapon.name} (${poison.name})`,
     type: "effect",
     img: poison.img,
     flags: {
@@ -20,7 +20,7 @@ export async function applyPoisonEffect(actor, weapon, poison) {
       duration: { value: 10, unit: "rounds" },
       rules: [],
       description: {
-        value: `<p><strong>${weapon.name}</strong> wurde mit <strong>${poison.name}</strong> vergiftet. @UUID[${poison.uuid}]{${poison.name}}</p>` +
+        value: `<p><strong>${weapon.name}</strong> has been poisoned with <strong>${poison.name}</strong>. @UUID[${poison.uuid}]{${poison.name}}</p>` +
                (poison.system?.description?.value || ""),
         gm: poison.system?.description?.gm || ""
       }
@@ -30,18 +30,18 @@ export async function applyPoisonEffect(actor, weapon, poison) {
   try {
     await actor.createEmbeddedDocuments("Item", [effectData]);
   } catch (error) {
-    console.error("❌ Fehler beim Hinzufügen des Effekts am Token:", error);
+    console.error("❌ Error adding effect to token:", error);
   }
 
   const newQuantity = Math.max((poison.system.quantity ?? 1) - 1, 0);
   await poison.update({"system.quantity": newQuantity});
 
   ChatMessage.create({
-    content: `<b>${actor.name}</b> hat <b>${poison.name}</b> auf <b>${weapon.name}</b> angewendet!`,
+    content: `<b>${actor.name}</b> applied <b>${poison.name}</b> to <b>${weapon.name}</b>!`,
     speaker: ChatMessage.getSpeaker({actor})
   });
 
-  ui.notifications.info(`${poison.name} wurde auf ${weapon.name} angewendet.`);
+  ui.notifications.info(`${poison.name} has been applied to ${weapon.name}.`);
 }
 
 export async function postPoisonEffectOnHit(message) {
@@ -70,7 +70,7 @@ export async function postPoisonEffectOnHit(message) {
   if (!weapon || weapon.type !== "weapon") return;
   const poisoned = weapon.getFlag(MODULE_ID, "poisoned");
   if (game.settings.get(MODULE_ID, "debug")) {
-    console.log(`Poison Applier | ${weapon.name} ${poisoned ? "hat ein Gift." : "hat kein Gift."}`);
+    console.log(`Poison Applier | ${weapon.name} ${poisoned ? "has a poison." : "does not have a poison."}`);
     console.log(`Poison Applier | Outcome: ${outcome}`);
   }
   if (!poisoned) {
