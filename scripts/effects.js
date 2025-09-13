@@ -68,12 +68,9 @@ export async function postPoisonEffectOnHit(message) {
   const weapon = await fromUuid(weaponUuid);
   if (!weapon || weapon.type !== "weapon") return;
   const poisoned = weapon.getFlag(MODULE_ID, "poisoned");
-  const roll = message.rolls?.[0];
-  const dc = context.dc?.value;
-  const dos = roll && dc ? new game.pf2e.DegreeOfSuccess(roll, dc) : null;
   if (game.settings.get(MODULE_ID, "debug")) {
     console.log(`Poison Applier | ${weapon.name} ${poisoned ? "hat ein Gift." : "hat kein Gift."}`);
-    if (dos) console.log(`Poison Applier | DegreeOfSuccess: ${dos.value}`);
+    console.log(`Poison Applier | Outcome: ${outcome}`);
   }
   if (!poisoned) {
     console.warn(`Poison Applier | weapon ${weapon.name} lacks poison flag.`);
@@ -83,7 +80,7 @@ export async function postPoisonEffectOnHit(message) {
   const slug = `poisoned-weapon-${actor.id}-${weapon.id}`;
   const effect = actor.items.find(i => i.type === "effect" && i.system?.slug === slug);
   if (!effect) return;
-  if (dos && dos.value >= game.pf2e.DegreeOfSuccess.SUCCESS) {
+  if (["success", "criticalSuccess"].includes(outcome)) {
     await effect.toMessage({}, { create: true });
     const aa = game.modules.get("autoanimations")?.API;
     if (aa) {
