@@ -83,13 +83,16 @@ export async function postPoisonEffectOnHit(message) {
   if (!effect) return;
   if (["success", "criticalSuccess"].includes(outcome)) {
     await effect.toMessage({}, { create: true });
-    const aa = game.modules.get("autoanimations")?.API;
-    if (aa) {
-      aa.playAnimation(token, {
-        animation: "jb2a.poison.spray.green",
-        source: token,
-        target: message?.targets?.[0]
-      });
+    const target = message?.targets?.[0];
+    if (game.modules.get("autoanimations")?.active && game.modules.get("sequencer")?.active && target) {
+      if (game.settings.get(MODULE_ID, "debug")) {
+        console.log("Poison Applier | Playing poison effect animation via Sequencer.");
+      }
+      new Sequence()
+        .effect()
+          .file("autoanimations.static.liquid.splash.01.green")
+          .atLocation(target)
+        .play();
     }
   }
   await actor.deleteEmbeddedDocuments("Item", [effect.id]);
