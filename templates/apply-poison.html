@@ -15,4 +15,10 @@
             {{/each}}
         </select>
     </div>
+    {{#if hasPoisonCoat}}
+    <div class="form-group">
+        <label for="poison-coat">Activate Poison Coat feat (skip weapon validation)</label>
+        <input type="checkbox" id="poison-coat" />
+    </div>
+    {{/if}}
 </form>

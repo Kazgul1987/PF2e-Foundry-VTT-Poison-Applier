@@ -44,6 +44,52 @@ export async function applyPoisonEffect(actor, weapon, poison) {
   ui.notifications.info(`${poison.name} has been applied to ${weapon.name}.`);
 }
 
+export async function applyPoisonCoatEffect(actor, weapon, poison) {
+  console.log(`✅ ${actor.name} prepares ${poison.name} with Poison Coat.`);
+
+  const slug = `poison-coat-${actor.id}`.toLowerCase();
+  const effectData = {
+    name: `Poison Coat (${poison.name})`,
+    type: "effect",
+    img: poison.img,
+    flags: {
+      core: { sourceId: poison.uuid }
+    },
+    system: {
+      slug,
+      tokenIcon: { show: true },
+      duration: { value: 10, unit: "rounds" },
+      rules: [],
+      description: {
+        value: `<p><strong>${actor.name}</strong> prepares <strong>${poison.name}</strong> with Poison Coat.</p>` +
+               (poison.system?.description?.value || ""),
+        gm: poison.system?.description?.gm || ""
+      }
+    }
+  };
+
+  try {
+    const existingCoat = actor.items.find(i => i.type === "effect" && i.slug === slug);
+    if (existingCoat) {
+      await actor.deleteEmbeddedDocuments("Item", [existingCoat.id]);
+    }
+    await actor.createEmbeddedDocuments("Item", [effectData]);
+  } catch (error) {
+    console.error("❌ Error adding Poison Coat effect:", error);
+  }
+
+  const newQuantity = Math.max((poison.system.quantity ?? 1) - 1, 0);
+  await poison.update({"system.quantity": newQuantity});
+
+  const weaponMessage = weapon ? ` for <b>${weapon.name}</b>` : "";
+  ChatMessage.create({
+    content: `<b>${actor.name}</b> prepares <b>${poison.name}</b>${weaponMessage} with <b>Poison Coat</b>!`,
+    speaker: ChatMessage.getSpeaker({actor})
+  });
+
+  ui.notifications.info(`${poison.name} has been prepared with Poison Coat.`);
+}
+
 export async function postPoisonEffectOnHit(message) {
   const context = message.flags?.pf2e?.context;
   if (!context) return;
