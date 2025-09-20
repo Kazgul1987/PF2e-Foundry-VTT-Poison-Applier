@@ -1,4 +1,4 @@
- import { applyPoisonEffect } from "./effects.js";
+ import { applyPoisonCoatEffect, applyPoisonEffect } from "./effects.js";
 
 // 🛠 Funktion zum Filtern von Waffen im Inventar
 function getWeapons(actor) {
@@ -11,11 +11,21 @@ function getPoisons(actor) {
 }
 
 // 🛠 Hauptfunktion zum Anwenden des Gifts
-async function applyPoison(actor, weaponId, poisonId) {
-    let weapon = actor.items.get(weaponId);
-    let poison = actor.items.get(poisonId);
+async function applyPoison(actor, weaponId, poisonId, usePoisonCoat = false) {
+    const weapon = weaponId ? actor.items.get(weaponId) : null;
+    const poison = actor.items.get(poisonId);
 
-    if (!weapon || !poison) {
+    if (!poison) {
+        ui.notifications.error("Error applying poison.");
+        return;
+    }
+
+    if (usePoisonCoat) {
+        await applyPoisonCoatEffect(actor, weapon, poison);
+        return;
+    }
+
+    if (!weapon) {
         ui.notifications.error("Error applying poison.");
         return;
     }
@@ -41,6 +51,12 @@ async function showPoisonDialog(actor) {
 
     let weapons = getWeapons(actor);
     let poisons = getPoisons(actor);
+    const hasPoisonCoat = actor.items.some(item =>
+        item.type === "feat" &&
+        (item.slug === "poison-coat"
+            || item.system?.slug === "poison-coat"
+            || item.name?.toLowerCase() === "poison coat")
+    );
 
 
     if (weapons.length === 0) {
@@ -54,7 +70,7 @@ async function showPoisonDialog(actor) {
     }
 
     const templatePath = "modules/poison-applier/templates/apply-poison.html";
-    const content = await renderTemplate(templatePath, { weapons, poisons });
+    const content = await renderTemplate(templatePath, { weapons, poisons, hasPoisonCoat });
 
     new Dialog({
         title: "Apply Poison to Weapon",
@@ -65,7 +81,8 @@ async function showPoisonDialog(actor) {
                 callback: (html) => {
                     let weaponId = html.find("#weapon").val();
                     let poisonId = html.find("#poison").val();
-                    applyPoison(actor, weaponId, poisonId);
+                    const usePoisonCoat = html.find("#poison-coat").is(":checked");
+                    applyPoison(actor, weaponId, poisonId, usePoisonCoat);
                 }
             },
             cancel: {
