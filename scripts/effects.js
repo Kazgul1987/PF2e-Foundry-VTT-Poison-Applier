@@ -91,6 +91,10 @@ export async function applyPoisonCoatEffect(actor, weapon, poison) {
 }
 
 export async function postPoisonEffectOnHit(message) {
+  const isAuthor = message.isAuthor ?? (message.user?.id === game.user.id);
+  const isGMAuthor = game.user.isGM && message.user?.id === game.user.id;
+  if (!isAuthor && !isGMAuthor) return;
+
   const context = message.flags?.pf2e?.context;
   if (!context) return;
   const outcome = context.outcome;
